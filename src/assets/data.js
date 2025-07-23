@@ -13,7 +13,7 @@ import darkchocooats from "./darkchocooats.png";
 import datesPowder from "./datesPowder.png";
 import dcpb from "./dcpb.png";
 import hazelnut from "./hazelnut.png";
-import isolateTrustified from "./isolateTrustified.png";
+import isolateTrustified from "./IsolateTrustified.png";
 import jaggery from "./jaggery.png";
 import maslaOat from "./maslaOat.png";
 import monkfruit from "./monkfruit.png";
