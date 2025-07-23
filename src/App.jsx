@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar/Navbar.jsx";
@@ -11,8 +11,20 @@ import Login from "./components/Login/Login.jsx";
 import SignUp from "./components/Signup/Signup.jsx";
 import NutritionRecommend from "./components/NutritionRecommend/Nutritionrecomend.jsx";
 import CartPage from "./components/CartPage/Cartpage.jsx";
+import Spinner from "./components/Spinner/Spinner.jsx";
 
 const App = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 4000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <Spinner />;
+  }
+
   return (
     <div className="min-h-screen w-full ">
       <Navbar />
