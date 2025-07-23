@@ -16,7 +16,7 @@ import hazelnut from "./hazelnut.png";
 import isolateTrustified from "./IsolateTrustified.png";
 import jaggery from "./jaggery.png";
 import maslaOat from "./maslaOat.png";
-import monkfruit from "./monkfruit.png";
+import monkfruit from "./Monkfruit.png";
 import muesli from "./muesli.png";
 import nutsseeds from "./nutsseeds.png";
 import oats from "./oats.png";
