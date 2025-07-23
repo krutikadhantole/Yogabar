@@ -59,7 +59,7 @@ const Video = () => {
 
   return (
     <div className="py-10 px-4 md:px-20 bg-[#FFEAEA] mt-5">
-      <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-[#AC1754] w-[200]">
+      <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 text-[#AC1754]">
         Let's create some healthy dishes <br></br>
         <span className="text-[#7E2C23] text-2xl md:text-3xl font-bold text-center italic">
           with yogaBar products
