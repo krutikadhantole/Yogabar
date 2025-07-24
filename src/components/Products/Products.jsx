@@ -31,7 +31,7 @@ const Products = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-[#AC1754]">
             Discover Our Deliciously Nutritious Range.
           </h1>
-          <p className="text-lg text-[#7E2C23] italic mt-2">
+          <p className="text-lg text-[#7E2C23] italic font-bold mt-2">
             Nourish your body, fuel your soul.
           </p>
         </div>

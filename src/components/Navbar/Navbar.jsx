@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { CartContext } from "../../context/CartContext";
-import { useContext } from "react";
-
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-import Logo from "../../assets/logo.png";
+import { motion } from "framer-motion";
+import { CartContext } from "../../context/CartContext";
+
+// Icons
 import { IoIosSearch } from "react-icons/io";
 import { BsCart4 } from "react-icons/bs";
 import { GoPerson } from "react-icons/go";
 import { HiMenu, HiX } from "react-icons/hi";
-import "./Navbar.css"; // Your existing CSS
+
+// Assets
+import Logo from "../../assets/logo.png";
+import "./Navbar.css";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,19 +19,18 @@ const Navbar = () => {
   const [lastScrollY, setLastScrollY] = useState(window.scrollY);
   const { cartCount } = useContext(CartContext);
 
-  // Scroll behavior
+  // Scroll behavior to hide/show navbar on scroll
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > lastScrollY) {
-        setShowNavbar(false); // Scroll down
+        setShowNavbar(false); // scrolling down
       } else {
-        setShowNavbar(true); // Scroll up
+        setShowNavbar(true); // scrolling up
       }
       setLastScrollY(window.scrollY);
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
@@ -44,17 +45,18 @@ const Navbar = () => {
     >
       <div className="flex justify-between items-center">
         {/* Logo */}
-        <div>
+        <Link to="/">
           <img src={Logo} alt="yogaBar" className="w-16 h-16" />
-        </div>
+        </Link>
 
         {/* Mobile Icons */}
         <div className="md:hidden flex gap-6 items-center text-white text-lg font-semibold">
-          <IoIosSearch className="text-2xl hover:scale-125 transition-transform duration-300" />
-          <Link to="/Login/Login.jsx" onClick={() => setIsOpen(false)}>
+          <Link to="/SearchProducts">
+            <IoIosSearch className="text-2xl hover:scale-125 transition-transform duration-300" />
+          </Link>
+          <Link to="/Login">
             <GoPerson className="text-2xl hover:scale-125 transition-transform duration-300" />
           </Link>
-
           <Link to="/CartPage" className="relative">
             <BsCart4 className="text-2xl hover:scale-125 transition-transform duration-300" />
             {cartCount > 0 && (
@@ -65,7 +67,7 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Hamburger Menu */}
         <div className="md:hidden">
           <button onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? (
@@ -76,8 +78,8 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex gap-140 items-center text-white text-lg font-semibold">
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex gap-110 items-center text-white text-lg font-semibold">
           <div className="flex gap-10 items-center mr-10">
             <Link to="/" className="relative group inline-block">
               <span>Home</span>
@@ -95,19 +97,18 @@ const Navbar = () => {
               to="/NutritionRecommend"
               className="relative group inline-block font-bold text-[#FFEB55] leading-4 text-center hover:text-yellow-100"
             >
-              <span>
-                Nutrition<br></br> Recommend
-              </span>
+              <span>Nutrition Recommendation</span>
             </Link>
           </div>
 
-          {/* Right Icons */}
+          {/* Right Icons (Desktop) */}
           <div className="flex gap-6 items-center">
-            <IoIosSearch className="text-2xl hover:scale-125 transition-transform duration-300" />
-            <Link to="/Login" onClick={() => setIsOpen(false)}>
+            <Link to="/SearchProducts">
+              <IoIosSearch className="text-2xl hover:scale-125 transition-transform duration-300" />
+            </Link>
+            <Link to="/Login">
               <GoPerson className="text-2xl hover:scale-125 transition-transform duration-300" />
             </Link>
-
             <Link to="/CartPage" className="relative">
               <BsCart4 className="text-2xl hover:scale-125 transition-transform duration-300" />
               {cartCount > 0 && (
@@ -120,7 +121,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile Dropdown Navigation */}
       {isOpen && (
         <div className="md:hidden mt-4 flex flex-col gap-4 text-white text-lg font-semibold">
           <Link to="/" onClick={() => setIsOpen(false)}>
@@ -133,7 +134,7 @@ const Navbar = () => {
             About
           </Link>
           <Link to="/NutritionRecommend" onClick={() => setIsOpen(false)}>
-            Nutrition Recommend
+            Nutrition Recommendation
           </Link>
         </div>
       )}

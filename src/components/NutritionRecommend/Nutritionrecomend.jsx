@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import products from "../../assets/data.js";
 import { motion } from "framer-motion";
+import { Listbox } from "@headlessui/react";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
 const NutritionRecommend = () => {
   const [step, setStep] = useState(1);
@@ -25,11 +27,6 @@ const NutritionRecommend = () => {
     });
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setAnswers((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -43,27 +40,92 @@ const NutritionRecommend = () => {
     const mappedGoal = goalMapping[answers.goal];
 
     const result = products.filter((product) => {
-      const matchesGoal = !answers.goal || product.tags?.includes(mappedGoal);
+      const matchesGoal =
+        !answers.goal || product.tags?.some((tag) => tag.includes(mappedGoal));
 
       const matchesDiet =
         answers.diet.length === 0 ||
-        answers.diet.every((diet) => product.tags?.includes(diet));
+        answers.diet.some((diet) => product.tags?.includes(diet));
 
       const matchesAllergies =
         answers.allergies.length === 0 ||
-        answers.allergies.every(
-          (allergy) => !product.ingredients?.includes(allergy)
+        !answers.allergies.some((allergy) =>
+          product.ingredients?.some((ingredient) =>
+            ingredient.toLowerCase().includes(allergy.toLowerCase())
+          )
         );
 
       return matchesGoal && matchesDiet && matchesAllergies;
     });
 
-    setRecommendations(result);
+    if (result.length === 0) {
+      const fallback = products.filter(
+        (product) =>
+          !answers.allergies.some((allergy) =>
+            product.ingredients?.some((ingredient) =>
+              ingredient.toLowerCase().includes(allergy.toLowerCase())
+            )
+          )
+      );
+
+      setRecommendations(fallback.slice(0, 3));
+    } else {
+      setRecommendations(result);
+    }
+
     nextStep();
   };
 
+  const CustomSelect = ({ label, value, onChange, options }) => (
+    <div>
+      <label className="block text-sm font-medium text-[#3F1B1B] mb-2">
+        {label}
+      </label>
+      <Listbox value={value} onChange={onChange}>
+        <div className="relative">
+          <Listbox.Button className="w-full px-4 py-2 rounded-full border border-[#AC1754] bg-[#FFEAEA] text-[#AC1754] focus:outline-none focus:ring-2 focus:ring-[#AC1754] flex justify-between items-center">
+            <span>
+              {options.find((opt) => opt.value === value)?.label || "Select..."}
+            </span>
+            <ChevronUpDownIcon className="w-5 h-5 text-[#AC1754]" />
+          </Listbox.Button>
+          <Listbox.Options className="absolute z-10 mt-2 w-full rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            {options.map((option) => (
+              <Listbox.Option
+                key={option.value}
+                value={option.value}
+                className={({ active }) =>
+                  `cursor-pointer select-none relative px-4 py-2 ${
+                    active ? "bg-[#F5CBCB] text-[#AC1754]" : "text-[#3F1B1B]"
+                  }`
+                }
+              >
+                {({ selected }) => (
+                  <>
+                    <span
+                      className={`block truncate ${
+                        selected ? "font-semibold" : "font-normal"
+                      }`}
+                    >
+                      {option.label}
+                    </span>
+                    {selected ? (
+                      <span className="absolute inset-y-0 right-4 flex items-center text-[#AC1754]">
+                        <CheckIcon className="w-5 h-5" />
+                      </span>
+                    ) : null}
+                  </>
+                )}
+              </Listbox.Option>
+            ))}
+          </Listbox.Options>
+        </div>
+      </Listbox>
+    </div>
+  );
+
   return (
-    <div className="bg-[#FFEAEA] min-h-screen flex items-center justify-center px-4 py-10">
+    <div className="bg-[#FFEAEA] min-h-screen flex items-center justify-center px-4 py-10 mt-20">
       <motion.div
         className="bg-[#F5CBCB] p-8 rounded-3xl shadow-2xl w-full max-w-2xl"
         initial={{ y: 40, opacity: 0 }}
@@ -76,24 +138,17 @@ const NutritionRecommend = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {step === 1 && (
-            <div>
-              <label className="block text-sm font-medium text-[#3F1B1B] mb-2">
-                Your Fitness Goal:
-              </label>
-              <select
-                name="goal"
-                value={answers.goal}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded-full border border-[#AC1754] focus:outline-none focus:ring-2 focus:ring-[#AC1754] bg-[#FFEAEA] text-[#AC1754]"
-                required
-              >
-                <option value="">Select...</option>
-                <option value="weight_loss">Weight Loss</option>
-                <option value="muscle_gain">Muscle Gain</option>
-                <option value="energy">Energy Boost</option>
-                <option value="healthy_snack">Healthy Snacking</option>
-              </select>
-            </div>
+            <CustomSelect
+              label="Your Fitness Goal:"
+              value={answers.goal}
+              onChange={(val) => setAnswers((prev) => ({ ...prev, goal: val }))}
+              options={[
+                { label: "Weight Loss", value: "weight_loss" },
+                { label: "Muscle Gain", value: "muscle_gain" },
+                { label: "Energy Boost", value: "energy" },
+                { label: "Healthy Snacking", value: "healthy_snack" },
+              ]}
+            />
           )}
 
           {step === 2 && (
@@ -125,25 +180,7 @@ const NutritionRecommend = () => {
               <label className="block text-sm font-medium text-[#3F1B1B] mb-2">
                 Allergies:
               </label>
-
               <div className="space-y-2">
-                {/* Non-Allergic */}
-                <label className="block text-[#3F1B1B]">
-                  <input
-                    type="checkbox"
-                    value="none"
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setAnswers((prev) => ({ ...prev, allergies: [] }));
-                      }
-                    }}
-                    checked={answers.allergies.length === 0}
-                    className="mr-2"
-                  />
-                  Non-Allergic
-                </label>
-
-                {/* Allergic*/}
                 {["nuts", "soy", "dairy", "milk"].map((item) => (
                   <label key={item} className="block text-[#3F1B1B]">
                     <input
@@ -151,7 +188,6 @@ const NutritionRecommend = () => {
                       value={item}
                       onChange={(e) => handleCheckboxChange(e, "allergies")}
                       checked={answers.allergies.includes(item)}
-                      disabled={answers.allergies.length === 0}
                       className="mr-2"
                     />
                     {item.toUpperCase()}
@@ -162,24 +198,19 @@ const NutritionRecommend = () => {
           )}
 
           {step === 4 && (
-            <div>
-              <label className="block text-sm font-medium text-[#3F1B1B] mb-2">
-                Your Lifestyle:
-              </label>
-              <select
-                name="lifestyle"
-                value={answers.lifestyle}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded-full border border-[#AC1754] focus:outline-none focus:ring-2 focus:ring-[#AC1754] bg-white text-[#3F1B1B]"
-                required
-              >
-                <option value="">Select...</option>
-                <option value="athlete">Athlete</option>
-                <option value="professional">Busy Professional</option>
-                <option value="student">Student</option>
-                <option value="parent">Parent</option>
-              </select>
-            </div>
+            <CustomSelect
+              label="Your Lifestyle:"
+              value={answers.lifestyle}
+              onChange={(val) =>
+                setAnswers((prev) => ({ ...prev, lifestyle: val }))
+              }
+              options={[
+                { value: "athlete", label: "Athlete" },
+                { value: "professional", label: "Busy Professional" },
+                { value: "student", label: "Student" },
+                { value: "parent", label: "Parent" },
+              ]}
+            />
           )}
 
           <div className="flex justify-between pt-4">
@@ -213,16 +244,16 @@ const NutritionRecommend = () => {
         </form>
 
         {step === 5 && (
-          <div className="mt-8">
+          <div className="mt-2 text-center">
             <h3 className="text-xl font-semibold text-[#AC1754] mb-4">
               Recommended Products:
             </h3>
             {recommendations.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ml-10">
                 {recommendations.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-white p-4 rounded-xl border border-[#AC1754] shadow"
+                    className="bg-[#FFEAEA] p-4 rounded-xl border border-[#AC1754] shadow"
                   >
                     <img
                       src={item.img}
@@ -239,9 +270,39 @@ const NutritionRecommend = () => {
                 ))}
               </div>
             ) : (
-              <p className="text-red-500 text-center">
-                No matches found. Try different preferences!
-              </p>
+              <div className="text-center">
+                <p className="text-red-500 mb-4">
+                  No matches found. But here are some popular picks you might
+                  like:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {products
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 3)
+                    .map((item) => (
+                      <div
+                        key={item.id}
+                        className="bg-white p-4 rounded-xl border border-[#AC1754] shadow"
+                      >
+                        <img
+                          src={item.img}
+                          alt={item.title}
+                          className="w-full h-32 object-contain mb-3 rounded"
+                        />
+                        <h4 className="font-bold text-[#3F1B1B]">
+                          {item.title}
+                        </h4>
+                        <p className="text-sm text-[#3F1B1B]">
+                          {item.description}
+                        </p>
+                        <p className="text-[#AC1754] font-semibold mt-2">
+                          ₹{item.price} ({item.weight})
+                        </p>
+                        <p className="text-yellow-500">⭐ {item.rating}</p>
+                      </div>
+                    ))}
+                </div>
+              </div>
             )}
           </div>
         )}

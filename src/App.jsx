@@ -12,12 +12,13 @@ import SignUp from "./components/Signup/Signup.jsx";
 import NutritionRecommend from "./components/NutritionRecommend/Nutritionrecomend.jsx";
 import CartPage from "./components/CartPage/Cartpage.jsx";
 import Spinner from "./components/Spinner/Spinner.jsx";
+import SearchProducts from "./components/SearchProducts/SearchProduct.jsx";
 
 const App = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 4000);
+    const timer = setTimeout(() => setLoading(false), 3000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -33,6 +34,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/CartPage" element={<CartPage />} />
+        <Route path="/SearchProducts" element={<SearchProducts />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/Products" element={<Products />} />
