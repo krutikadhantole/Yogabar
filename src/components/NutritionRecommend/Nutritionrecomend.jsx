@@ -181,18 +181,20 @@ const NutritionRecommend = () => {
                 Allergies:
               </label>
               <div className="space-y-2">
-                {["nuts", "soy", "dairy", "milk"].map((item) => (
-                  <label key={item} className="block text-[#3F1B1B]">
-                    <input
-                      type="checkbox"
-                      value={item}
-                      onChange={(e) => handleCheckboxChange(e, "allergies")}
-                      checked={answers.allergies.includes(item)}
-                      className="mr-2"
-                    />
-                    {item.toUpperCase()}
-                  </label>
-                ))}
+                {["nuts", "soy", "dairy", "milk", "non-allergatic"].map(
+                  (item) => (
+                    <label key={item} className="block text-[#3F1B1B]">
+                      <input
+                        type="checkbox"
+                        value={item}
+                        onChange={(e) => handleCheckboxChange(e, "allergies")}
+                        checked={answers.allergies.includes(item)}
+                        className="mr-2"
+                      />
+                      {item.toUpperCase()}
+                    </label>
+                  )
+                )}
               </div>
             </div>
           )}
